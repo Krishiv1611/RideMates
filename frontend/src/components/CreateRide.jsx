@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import FooterNav from "./FooterNav"; // Adjust the path if needed
 
 const CreateRide = () => {
   const [from, setFrom] = useState("");
@@ -45,9 +46,6 @@ const CreateRide = () => {
 
       if (response.ok) {
         toast.success("Ride created successfully!");
-        setTimeout(() => {
-          navigate("/book");
-        }, 1500);
       } else {
         toast.error(data.message || "Ride creation failed.");
       }
@@ -61,7 +59,7 @@ const CreateRide = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center p-6 relative"
+      className="min-h-screen flex flex-col items-center justify-center p-6 relative pb-24"
       style={{
         backgroundColor: "#1e1e24",
         fontFamily: "'Poppins', sans-serif",
@@ -70,12 +68,6 @@ const CreateRide = () => {
       <ToastContainer position="top-right" autoClose={3000} theme="dark" />
 
       {/* Book a Ride Button - Top Right */}
-      <button
-        onClick={() => navigate("/book")}
-        className="absolute top-6 right-6 bg-gradient-to-r from-[#7209b7] to-[#f72585] text-white font-medium text-sm px-5 py-2 rounded-xl shadow-md hover:scale-105 transition-transform"
-      >
-        Book a Ride
-      </button>
 
       <div className="bg-[#111114] w-full max-w-lg p-10 rounded-3xl shadow-2xl border border-[#2e2e3e] mt-8">
         <h1
@@ -89,68 +81,18 @@ const CreateRide = () => {
         </h3>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <input
-            type="text"
-            placeholder="From"
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            required
-            className="bg-[#1e1e24] placeholder-gray-400 text-white rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585] transition-shadow"
-          />
-
-          <input
-            type="text"
-            placeholder="To"
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-            required
-            className="bg-[#1e1e24] placeholder-gray-400 text-white rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585] transition-shadow"
-          />
-
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-            min={todayDate}
-            className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585] transition-shadow"
-          />
-
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            required
-            className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585] transition-shadow"
-          />
-
-          <select
-            value={vehicle}
-            onChange={(e) => setVehicle(e.target.value)}
-            required
-            className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585] transition-shadow"
-          >
+          <input type="text" placeholder="From" value={from} onChange={(e) => setFrom(e.target.value)} required className="bg-[#1e1e24] placeholder-gray-400 text-white rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]" />
+          <input type="text" placeholder="To" value={to} onChange={(e) => setTo(e.target.value)} required className="bg-[#1e1e24] placeholder-gray-400 text-white rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]" />
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required min={todayDate} className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]" />
+          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]" />
+          <select value={vehicle} onChange={(e) => setVehicle(e.target.value)} required className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]">
             <option value="" disabled>Select Vehicle Type</option>
             <option value="car">Car</option>
             <option value="bike">Bike</option>
             <option value="scooty">Scooty</option>
           </select>
-
-          <input
-            type="number"
-            placeholder="Price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
-            className="bg-[#1e1e24] placeholder-gray-400 text-white rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585] transition-shadow"
-          />
-
-          <select
-            value={seats}
-            onChange={(e) => setSeats(e.target.value)}
-            required
-            className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585] transition-shadow"
-          >
+          <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} required className="bg-[#1e1e24] placeholder-gray-400 text-white rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]" />
+          <select value={seats} onChange={(e) => setSeats(e.target.value)} required className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]">
             <option value="" disabled>Select Seats</option>
             {vehicle === "car" ? (
               <>
@@ -166,34 +108,20 @@ const CreateRide = () => {
               </>
             ) : null}
           </select>
-
-          <select
-            value={bookingMode}
-            onChange={(e) => setBookingMode(e.target.value)}
-            required
-            className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585] transition-shadow"
-          >
+          <select value={bookingMode} onChange={(e) => setBookingMode(e.target.value)} required className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]">
             <option value="" disabled>Select Booking Mode</option>
             <option value="auto">Auto</option>
             <option value="manual">Manual</option>
           </select>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-gradient-to-r from-[#f72585] to-[#7209b7] text-white font-medium text-lg py-3 rounded-xl hover:scale-105 transform transition-transform duration-300 shadow-md"
-          >
+          <button type="submit" disabled={loading} className="bg-gradient-to-r from-[#f72585] to-[#7209b7] text-white font-medium text-lg py-3 rounded-xl hover:scale-105 transform transition-transform duration-300 shadow-md">
             {loading ? "Creating..." : "Create Ride"}
           </button>
         </form>
       </div>
+
+      <FooterNav />
     </div>
   );
 };
 
 export default CreateRide;
-
-
-
-
-

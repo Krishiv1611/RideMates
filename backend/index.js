@@ -10,7 +10,7 @@ const reserveRouter = require("./routes/reservation");
 const PORT = process.env.PORT;
 const app = express();
 
-// ✅ Use middleware BEFORE routes
+
 app.use(cors({
   origin: process.env.FRONT_END,
   credentials: true,
