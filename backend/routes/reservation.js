@@ -227,5 +227,25 @@ reserveRouter.get("/ridePassengers/:rideId", auth, async (req, res) => {
     res.status(500).json({ message: "Failed to fetch passengers", error: e.message });
   }
 });
+reserveRouter.get("/myReservations", auth, async (req, res) => {
+  const userId = req.userId;
+
+  try {
+    const reservations = await Reservation.find({ passenger: userId })
+      .populate("ride");
+
+    res.json({
+      message: "Your reservations fetched successfully",
+      reservations
+    });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({
+      message: "Failed to fetch reservations",
+      error: e.message
+    });
+  }
+});
 
 module.exports=reserveRouter
