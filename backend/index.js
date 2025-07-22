@@ -19,7 +19,7 @@ app.use(cors({
 app.use(express.json());
 app.use("/users", userRouter);
 app.use("/rides", ridesRouter);
-app.use("/reservation", reserveRouter);
+app.use("/reserve", reserveRouter);
 
 async function main() {
   try {
