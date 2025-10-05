@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FooterNav from "./FooterNav"; // Adjust the path if needed
+import client from "../api/client";
 
 const CreateRide = () => {
   const [from, setFrom] = useState("");
@@ -17,38 +18,25 @@ const CreateRide = () => {
   const todayDate = new Date().toISOString().split("T")[0];
 
   const navigate = useNavigate();
-  const BASE_URL = "http://localhost:8000";
+  const BASE_URL = "";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/rides/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          from,
-          to,
-          date,
-          time,
-          vehicleType: vehicle.toLowerCase(),
-          pricePerSeat: Number(price),
-          availableSeats: Number(seats),
-          bookingMode: bookingMode.toLowerCase(),
-        }),
+      const { data } = await client.post(`/rides/create`, {
+        from,
+        to,
+        date,
+        time,
+        vehicleType: vehicle.toLowerCase(),
+        pricePerSeat: Number(price),
+        availableSeats: Number(seats),
+        bookingMode: bookingMode.toLowerCase(),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("Ride created successfully!");
-      } else {
-        toast.error(data.message || "Ride creation failed.");
-      }
+      toast.success(data?.message || "Ride created successfully!");
     } catch (error) {
       console.error("Error during ride creation:", error);
       toast.error("Something went wrong. Please try again.");
@@ -58,41 +46,24 @@ const CreateRide = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center p-6 relative pb-24"
-      style={{
-        backgroundColor: "#1e1e24",
-        fontFamily: "'Poppins', sans-serif",
-      }}
-    >
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 relative pb-24" style={{ backgroundColor: "#0e0e12", fontFamily: "'Poppins', sans-serif" }}>
       <ToastContainer position="top-right" autoClose={3000} theme="dark" />
-
-      {/* Book a Ride Button - Top Right */}
-
-      <div className="bg-[#111114] w-full max-w-lg p-10 rounded-3xl shadow-2xl border border-[#2e2e3e] mt-8">
-        <h1
-          className="text-5xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#f72585] to-[#7209b7] text-center"
-          style={{ letterSpacing: "0.1em" }}
-        >
-          RideMates
-        </h1>
-        <h3 className="text-center text-gray-400 mb-8 tracking-wide text-lg">
-          Create a new ride
-        </h3>
+      <div className="bg-[#111218] w-full max-w-md p-8 rounded-2xl shadow-lg border border-[#242533] mt-8">
+        <h3 className="text-center text-white text-xl font-semibold mb-6">Create a ride</h3>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <input type="text" placeholder="From" value={from} onChange={(e) => setFrom(e.target.value)} required className="bg-[#1e1e24] placeholder-gray-400 text-white rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]" />
-          <input type="text" placeholder="To" value={to} onChange={(e) => setTo(e.target.value)} required className="bg-[#1e1e24] placeholder-gray-400 text-white rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]" />
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required min={todayDate} className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]" />
-          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]" />
-          <select value={vehicle} onChange={(e) => setVehicle(e.target.value)} required className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]">
+          <input type="text" placeholder="From" value={from} onChange={(e) => setFrom(e.target.value)} required className="bg-[#14151c] placeholder-gray-400 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f72585] border border-[#242533]" />
+          <input type="text" placeholder="To" value={to} onChange={(e) => setTo(e.target.value)} required className="bg-[#14151c] placeholder-gray-400 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f72585] border border-[#242533]" />
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required min={todayDate} className="bg-[#14151c] text-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f72585] border border-[#242533]" />
+          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required className="bg-[#14151c] text-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f72585] border border-[#242533]" />
+          <select value={vehicle} onChange={(e) => setVehicle(e.target.value)} required className="bg-[#14151c] text-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f72585] border border-[#242533]">
             <option value="" disabled>Select Vehicle Type</option>
             <option value="car">Car</option>
             <option value="bike">Bike</option>
             <option value="scooty">Scooty</option>
           </select>
-          <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} required className="bg-[#1e1e24] placeholder-gray-400 text-white rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]" />
-          <select value={seats} onChange={(e) => setSeats(e.target.value)} required className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]">
+          <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} required className="bg-[#14151c] placeholder-gray-400 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f72585] border border-[#242533]" />
+          <select value={seats} onChange={(e) => setSeats(e.target.value)} required className="bg-[#14151c] text-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f72585] border border-[#242533]">
             <option value="" disabled>Select Seats</option>
             {vehicle === "car" ? (
               <>
@@ -108,14 +79,12 @@ const CreateRide = () => {
               </>
             ) : null}
           </select>
-          <select value={bookingMode} onChange={(e) => setBookingMode(e.target.value)} required className="bg-[#1e1e24] text-gray-400 rounded-xl px-5 py-3 focus:outline-2 focus:outline-[#f72585]">
+          <select value={bookingMode} onChange={(e) => setBookingMode(e.target.value)} required className="bg-[#14151c] text-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#f72585] border border-[#242533]">
             <option value="" disabled>Select Booking Mode</option>
             <option value="auto">Auto</option>
             <option value="manual">Manual</option>
           </select>
-          <button type="submit" disabled={loading} className="bg-gradient-to-r from-[#f72585] to-[#7209b7] text-white font-medium text-lg py-3 rounded-xl hover:scale-105 transform transition-transform duration-300 shadow-md">
-            {loading ? "Creating..." : "Create Ride"}
-          </button>
+          <button type="submit" disabled={loading} className={`bg-[#f72585] hover:bg-[#e31d78] text-white font-medium text-base py-3 rounded-lg transition-colors ${loading ? "opacity-70 cursor-not-allowed" : ""}`}>{loading ? "Creating..." : "Create Ride"}</button>
         </form>
       </div>
 

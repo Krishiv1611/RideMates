@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FooterNav from "./FooterNav";
+import client from "../api/client";
 
 const MyCreated = () => {
-  const BASE_URL = "http://localhost:8000";
+  const BASE_URL = "";
   const [rides, setRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -27,21 +28,8 @@ const MyCreated = () => {
   const fetchMyCreatedRides = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/rides/mycreatedRides`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setRides(data.rides || []);
-      } else {
-        toast.error(data.message || "Failed to fetch your created rides");
-      }
+      const { data } = await client.get(`/rides/mycreatedRides`);
+      setRides(data?.rides || []);
     } catch (error) {
       toast.error("Something went wrong while fetching your rides.");
     } finally {
@@ -53,21 +41,9 @@ const MyCreated = () => {
     if (!window.confirm("Are you sure you want to cancel this ride?")) return;
 
     try {
-      const response = await fetch(`${BASE_URL}/rides/cancelRide/${rideId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success(data.message || "Ride cancelled successfully");
-        fetchMyCreatedRides();
-      } else {
-        toast.error(data.message || "Failed to cancel ride");
-      }
+      const { data } = await client.delete(`/rides/cancelRide/${rideId}`);
+      toast.success(data?.message || "Ride cancelled successfully");
+      fetchMyCreatedRides();
     } catch (error) {
       toast.error("Error cancelling ride");
     }
@@ -89,24 +65,10 @@ const MyCreated = () => {
 
   const handleUpdate = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/rides/updateRide/${selectedRide._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("Ride updated successfully");
-        setShowModal(false);
-        fetchMyCreatedRides();
-      } else {
-        toast.error(data.message || "Update failed");
-      }
+      const { data } = await client.put(`/rides/updateRide/${selectedRide._id}`, formData);
+      toast.success(data?.message || "Ride updated successfully");
+      setShowModal(false);
+      fetchMyCreatedRides();
     } catch (error) {
       toast.error("Error updating ride");
     }
@@ -120,23 +82,18 @@ const MyCreated = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 p-6 bg-[#1e1e24] text-white font-poppins">
+    <div className="min-h-screen pb-24 p-6 bg-[#0e0e12] text-white font-poppins">
       <ToastContainer position="top-right" autoClose={3000} theme="dark" />
-      <h2 className="text-3xl font-bold mb-6 text-center text-[#f72585]">
-        Rides You Created
-      </h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center">Rides You Created</h2>
 
       {loading ? (
         <p className="text-center text-gray-400">Loading your rides...</p>
       ) : rides.length === 0 ? (
         <p className="text-center text-gray-500">You haven't created any rides yet.</p>
       ) : (
-        <ul className="space-y-6">
+        <ul className="space-y-4">
           {rides.map((ride) => (
-            <li
-              key={ride._id}
-              className="bg-[#111114] p-6 rounded-xl shadow-md border border-[#2e2e3e]"
-            >
+            <li key={ride._id} className="bg-[#111218] p-5 rounded-xl shadow-sm border border-[#242533]">
               <p><strong>From:</strong> {ride.from}</p>
               <p><strong>To:</strong> {ride.to}</p>
               <p><strong>Date:</strong> {new Date(ride.date).toLocaleDateString()}</p>
@@ -146,10 +103,10 @@ const MyCreated = () => {
               <p><strong>Available Seats:</strong> {ride.availableSeats}</p>
               <p><strong>Booking Mode:</strong> {ride.bookingMode}</p>
 
-              <div className="flex gap-4 mt-4">
+              <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => openEditModal(ride)}
-                  className="px-4 py-2 rounded bg-yellow-500 text-black hover:bg-yellow-600"
+                  className="px-4 py-2 rounded bg-[#2a2a35] hover:bg-[#343446]"
                 >
                   Edit
                 </button>
@@ -159,6 +116,10 @@ const MyCreated = () => {
                 >
                   Cancel
                 </button>
+                {ride.bookingMode === "manual" && (
+                  <button onClick={() => window.location.assign(`/manage-requests/${ride._id}`)} className="px-4 py-2 rounded bg-[#14151c] border border-[#242533] hover:bg-[#1a1b23]">Manage Requests</button>
+                )}
+                <button onClick={() => window.location.assign(`/passengers/${ride._id}`)} className="px-4 py-2 rounded bg-[#14151c] border border-[#242533] hover:bg-[#1a1b23]">View Passengers</button>
               </div>
             </li>
           ))}
